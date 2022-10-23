@@ -1,3 +1,4 @@
+from xml.etree.ElementTree import Comment
 from django.shortcuts import redirect, render
 
 from items.forms import ItemForm
@@ -14,20 +15,29 @@ def get_items(req):
                 "name": item.name,
                 "price": item.price,
                 "image": item.image,
-            }
+                "category":{
+                    "name":item.category.name,
+                    "image":item.category.image,
+            }}
         )
     context = {"items": _items}
     return render(req, "item_list.html", context)
 
 def get_item(req, item_id):
     item = Item.objects.get(id=item_id)
+    comments=item.comments.all()
+    _comments=[]
+    for comment in comments:
+        _comments.append({"message":comment.message})
     context = {
                "item": { 
                     "id": item.id,
                     "name": item.name,
                     "price": item.price,
-                    "image": item.image
-                }
+                    "image": item.image,
+                    "comments":_comments,  
+                } 
+                
             }
     return render(req, "item_detail.html", context)
 
